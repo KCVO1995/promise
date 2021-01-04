@@ -1,4 +1,6 @@
 class MyPromise {
+  status = 'pending';
+
   constructor(fn) {
     if (!(fn instanceof Function)) {
       throw new Error('必须接受函数');
@@ -10,16 +12,26 @@ class MyPromise {
   fail = null;
 
   resolve() {
-    setTimeout(() => this.success());
+    this.status = 'fulfilled';
+    setTimeout(() => {
+      if (this.success instanceof Function) this.success();
+    });
   }
 
   reject() {
-    setTimeout(() => this.fail());
+    this.status = 'rejected';
+    setTimeout(() => {
+      if (this.fail instanceof Function) this.fail();
+    });
   }
 
-  then(success, fail?) {
-    this.success = success;
-    this.fail = fail;
+  then(success?, fail?) {
+    if (success instanceof Function) {
+      this.success = success;
+    }
+    if (fail instanceof Function) {
+      this.fail = fail;
+    }
   }
 }
 

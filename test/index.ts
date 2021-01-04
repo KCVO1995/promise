@@ -58,4 +58,35 @@ describe('Promise', () => {
     });
     promise.then(null, fail);
   });
+  it('2.1.1', () => {
+    const promise = new MyPromise(() => {})
+    assert(promise.status === 'pending')
+  })
+  it('2.1.2', () => {
+    const promise = new MyPromise((resolve) => {
+      resolve()
+      setTimeout(() => {
+        assert(promise.status === 'fulfilled')
+      })
+    })
+    promise.then(() => {}, () => {})
+  })
+  it('2.1.3', () => {
+    const promise = new MyPromise((resolve, reject) => {
+      reject()
+      setTimeout(() => {
+        assert(promise.status === 'rejected')
+      })
+    })
+    promise.then(() => {}, () => {})
+  })
+  it('2.2.1 onFulfilled和onRejected都是可选的参数', () => {
+    const promise = new MyPromise((resolve, reject) => {
+      reject()
+    })
+    promise.then(false, null)
+  })
+  it('2.2.2 如果onFulfilled是函数', () => {
+
+  })
 });
