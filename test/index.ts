@@ -62,20 +62,22 @@ describe('Promise', () => {
     const promise = new MyPromise(() => {})
     assert(promise.status === 'pending')
   })
-  it('2.1.2', () => {
+  it('2.1.2', done => {
     const promise = new MyPromise((resolve) => {
       resolve()
       setTimeout(() => {
         assert(promise.status === 'fulfilled')
+        done()
       })
     })
     promise.then(() => {}, () => {})
   })
-  it('2.1.3', () => {
+  it('2.1.3', done => {
     const promise = new MyPromise((resolve, reject) => {
       reject()
       setTimeout(() => {
         assert(promise.status === 'rejected')
+        done()
       })
     })
     promise.then(() => {}, () => {})
@@ -87,6 +89,33 @@ describe('Promise', () => {
     promise.then(false, null)
   })
   it('2.2.2 如果onFulfilled是函数', () => {
-
+    const success = sinon.fake()
+    const promise = new MyPromise((resolve, reject) => {
+      resolve('params')
+      resolve('params')
+      resolve('params')
+      assert.isFalse(success.called)
+      setTimeout(() => {
+        assert(promise.status === 'fulfilled')
+        assert.isTrue(success.calledWith('params'))
+        assert.isTrue(success.calledOnce)
+      })
+    })
+    promise.then(success)
+  })
+  it('2.2.3 如果onRejected是函数', () => {
+    const fail = sinon.fake()
+    const promise = new MyPromise((resolve, reject) => {
+      reject('params')
+      reject('params')
+      reject('params')
+      assert.isFalse(fail.called)
+      setTimeout(() => {
+        assert(promise.status === 'rejected')
+        assert.isTrue(fail.calledWith('params'))
+        assert.isTrue(fail.calledOnce)
+      })
+    })
+    promise.then(null, fail)
   })
 });

@@ -11,17 +11,19 @@ class MyPromise {
   success = null;
   fail = null;
 
-  resolve() {
+  resolve(value) {
+    if (this.status !== 'pending') return
     this.status = 'fulfilled';
     setTimeout(() => {
-      if (this.success instanceof Function) this.success();
+      if (this.success instanceof Function) this.success(value);
     });
   }
 
-  reject() {
+  reject(reason) {
+    if (this.status !== 'pending') return
     this.status = 'rejected';
     setTimeout(() => {
-      if (this.fail instanceof Function) this.fail();
+      if (this.fail instanceof Function) this.fail(reason);
     });
   }
 
