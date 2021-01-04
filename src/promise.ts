@@ -1,5 +1,6 @@
 class MyPromise {
   status = 'pending';
+  callbacks = [];
 
   constructor(fn) {
     if (!(fn instanceof Function)) {
@@ -8,32 +9,31 @@ class MyPromise {
     fn(this.resolve.bind(this), this.reject.bind(this));
   }
 
-  success = null;
-  fail = null;
-
   resolve(value) {
-    if (this.status !== 'pending') return
+    if (this.status !== 'pending') return;
     this.status = 'fulfilled';
     setTimeout(() => {
-      if (this.success instanceof Function) this.success(value);
+      this.callbacks.forEach(callback => {
+        if (callback[0] instanceof Function) callback[0].call(undefined, value);
+      })
     });
   }
 
   reject(reason) {
-    if (this.status !== 'pending') return
+    if (this.status !== 'pending') return;
     this.status = 'rejected';
     setTimeout(() => {
-      if (this.fail instanceof Function) this.fail(reason);
+      this.callbacks.forEach(callback => {
+        if (callback[1] instanceof Function) callback[1].call(undefined, reason);
+      })
     });
   }
 
   then(success?, fail?) {
-    if (success instanceof Function) {
-      this.success = success;
-    }
-    if (fail instanceof Function) {
-      this.fail = fail;
-    }
+    const handle = [];
+    if (success instanceof Function) handle[0] = success;
+    if (fail instanceof Function) handle[1] = fail;
+    this.callbacks.push(handle);
   }
 }
 
